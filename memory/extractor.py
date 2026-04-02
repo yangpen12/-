@@ -17,7 +17,7 @@ EXTRACT_PROMPT = """你是一个记忆提取助手。从下面的对话文本中
 4. 如果没有值得记住的信息，返回空列表
 
 请以 JSON 格式返回，格式如下：
-{"memories": ["记忆1", "记忆2", ...]}
+{{"memories": ["记忆1", "记忆2", ...]}}
 
 只返回 JSON，不要返回其他内容。
 
@@ -48,7 +48,7 @@ def extract_memories(text: str) -> list[str]:
     }
 
     try:
-        response = httpx.post(url, json=payload, timeout=60.0)
+        response = httpx.post(url, json=payload, timeout=300.0)
         response.raise_for_status()
         data = response.json()
 
@@ -59,9 +59,21 @@ def extract_memories(text: str) -> list[str]:
         if content.startswith("```"):
             # 去掉 ```json ... ``` 包裹
             lines = content.split("\n")
-            content = "\n".join(lines[1:-1])
-
-        result = json.loads(content)
+            # 过滤掉以 ``` 开头的行
+            content = "\n".join(line for line in lines if not line.strip().startswith("```"))
+        
+        # 尝试直接解析
+        try:
+            result = json.loads(content)
+        except json.JSONDecodeError:
+            # 尝试提取 JSON 部分
+            import re
+            match = re.search(r'\{[^{}]*"memories"[^{}]*\[.*?\][^{}]*\}', content, re.DOTALL)
+            if match:
+                result = json.loads(match.group())
+            else:
+                return []
+        
         memories = result.get("memories", [])
 
         # 过滤空字符串

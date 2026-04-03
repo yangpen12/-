@@ -1,4 +1,4 @@
-# Local Memory — 本地 AI 记忆系统[README.md](https://github.com/user-attachments/files/26453195/README.md)# Local Memory — 本地 AI 记忆系统 V2
+# Local Memory — 本地 AI 记忆系统# Local Memory — 本地 AI 记忆系统 V2
 
 一个极简的本地 AI 记忆系统，通过 MCP 协议接入 AI 工具（CodeBuddy / Claude），让 AI 拥有跨会话的持久化记忆能力。
 

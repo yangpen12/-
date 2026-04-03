@@ -26,7 +26,8 @@ def get_embedding(text: str) -> list[float]:
         },
     }
 
-    response = httpx.post(url, json=payload, timeout=30.0)
+    # 首次调用超时设置长一些（Ollama 冷启动）
+    response = httpx.post(url, json=payload, timeout=60.0)
     response.raise_for_status()
     data = response.json()
 
